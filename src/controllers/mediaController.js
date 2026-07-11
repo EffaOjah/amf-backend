@@ -11,7 +11,7 @@ exports.uploadMedia = (req, res) => {
   const title = req.body.title || null; // Title is optional
 
   const stream = cloudinary.uploader.upload_stream(
-    { folder: 'amf_media' },
+    { folder: 'amf_media', resource_type: 'auto' },
     async (error, result) => {
       if (error) {
         console.error(error);
@@ -73,16 +73,24 @@ exports.deleteMedia = async (req, res) => {
   try {
     const mediaId = req.params.id;
     
-    // First, find the public_id in the database
-    const [rows] = await db.query('SELECT public_id FROM media WHERE id = ?', [mediaId]);
+    // First, find the public_id and url in the database
+    const [rows] = await db.query('SELECT public_id, url FROM media WHERE id = ?', [mediaId]);
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Media not found' });
     }
 
-    const publicId = rows[0].public_id;
+    const { public_id: publicId, url } = rows[0];
+
+    // Determine resource_type from url
+    let resourceType = 'image';
+    if (url.includes('/video/upload/')) {
+      resourceType = 'video';
+    } else if (url.includes('/raw/upload/')) {
+      resourceType = 'raw';
+    }
 
     // Delete from Cloudinary
-    await cloudinary.uploader.destroy(publicId);
+    await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
 
     // Delete from database
     await db.query('DELETE FROM media WHERE id = ?', [mediaId]);
