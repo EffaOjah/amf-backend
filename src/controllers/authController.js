@@ -8,6 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'amf_super_secret_key_2026';
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log(req.body);
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Please provide username and password' });

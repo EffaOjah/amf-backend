@@ -33,6 +33,7 @@ const blogRoutes = require('./routes/blogRoutes');
 const mediaRoutes = require('./routes/mediaRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const authRoutes = require('./routes/authRoutes');
+const calendarRoutes = require('./routes/calendarRoutes');
 
 // Basic route
 app.get('/', (req, res) => {
@@ -44,6 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/calendar', calendarRoutes);
 
 // Start server
 app.listen(port, () => {
